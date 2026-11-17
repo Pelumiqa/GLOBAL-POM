@@ -21,4 +21,4 @@ jobs:
           browser: chrome
           spec: |
             cypress/e2e/globalfixtureass.cy.js
-            cypress/e2e/automationExercise.cy.js
+            cypress/e2e/Pomautomationass.cy.js
