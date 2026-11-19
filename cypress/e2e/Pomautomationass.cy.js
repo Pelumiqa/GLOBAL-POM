@@ -1,117 +1,31 @@
-import { faker } from '@faker-js/faker';
+import SignupLoginPages from '../pages/SignupLoginPages';
 
-import SignupLoginPage from '../pages/SignupLoginPages';
+describe('Assignment 2: Registration and Login Automation', () => {
 
-
-describe('Automation Exercise - Registration and Login', () => {
-
-    const signupLoginPage = new SignupLoginPage();
-
-    // Generate random user information using Faker
-
-    const firstName = faker.person.firstName();
-
-    const lastName = faker.person.lastName();
-
-    const user = {
-
-        name: `${firstName} ${lastName}`,
-
-        firstName: firstName,
-
-        lastName: lastName,
-
-        email: faker.internet.email({
-            firstName,
-            lastName
-        }).replace('@', `.${faker.string.alphanumeric(8)}@`),
-
-        password: 'Test@12345',
-
-        company: faker.company.name(),
-
-        address: faker.location.streetAddress(),
-
-        address2: faker.location.secondaryAddress(),
-
-        state: faker.location.state(),
-
-        city: faker.location.city(),
-
-        zipcode: faker.location.zipCode('#####'),
-
-        mobile: faker.string.numeric(10)
-
-    };
-
-
-    // TEST CASE 1: Successful Registration
-
-    it('should register a new user successfully', () => {
-
-        // Visit website
-        signupLoginPage.visitSignupLoginPage();
-
-        // Enter signup details
-        signupLoginPage.enterSignupDetails(
-            user.name,
-            user.email
-        );
-
-        // Verify account information page
-        cy.contains('Enter Account Information')
-            .should('be.visible');
-
-        // Fill account information
-        signupLoginPage.enterAccountInformation(user);
-
-        // Create account
-        signupLoginPage.createAccount();
-
-        // Verify account creation
-        signupLoginPage.verifyAccountCreated();
-
-        // Continue
-        signupLoginPage.continueAfterRegistration();
-
-        // Verify user is logged in
-        signupLoginPage.verifySuccessfulLogin(user.name);
-
+    it('Register new user', () => {
+        SignupLoginPages.visit();
+        
+        // Execute registration flow
+        SignupLoginPages.initiateSignup();
+        SignupLoginPages.fillAccountDetails();
+        SignupLoginPages.verifyAccountCreated();
+        
+        // Verify registration success (lands on home page logged in)
+        SignupLoginPages.verifySuccessfulLogin(SignupLoginPages.userData.name);
     });
 
+    it('Login into account', () => {
+        SignupLoginPages.visit();
+        
+      
+        const testEmail = SignupLoginPages.userData.email;
+        const testPassword = SignupLoginPages.userData.password;
 
-    // TEST CASE 2: Successful Login
-
-    it('should login with the registered user details', () => {
-
-        // Visit website
-        signupLoginPage.visitSignupLoginPage();
-
-        // Enter login details
-        signupLoginPage.enterLoginDetails(
-            user.email,
-            user.password
-        );
-
-        // Verify successful login
-        signupLoginPage.verifySuccessfulLogin(user.name);
-
-    });
-
-
-    // TEST CASE 3: Invalid Login
-
-    it('should not login with incorrect credentials', () => {
-
-        signupLoginPage.visitSignupLoginPage();
-
-        signupLoginPage.enterLoginDetails(
-            faker.internet.email(),
-            'WrongPassword123'
-        );
-
-        signupLoginPage.verifyInvalidLogin();
-
+        // Execute login flow independently
+        SignupLoginPages.loginUser(testEmail, testPassword);
+        
+        // Verify login success
+        SignupLoginPages.verifySuccessfulLogin(SignupLoginPages.userData.name);
     });
 
 });

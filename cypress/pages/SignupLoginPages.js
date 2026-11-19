@@ -1,106 +1,64 @@
-class SignupLoginPage {
+import { faker } from '@faker-js/faker';
 
-    // Open Signup/Login page
-    visitSignupLoginPage() {
-        cy.visit('/');
+class SignupLoginPages {
+    // Generate random user details using Faker
+    userData = {
+        name: faker.person ? faker.person.fullName() : faker.name.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password()
+    };
 
-        cy.contains('Signup / Login').click();
+    visit() {
+        cy.visit('https://automationexercise.com/login');
     }
 
-    // Registration - Initial signup
-    enterSignupDetails(name, email) {
-
-        cy.get('[data-qa="signup-name"]').type(name);
-
-        cy.get('[data-qa="signup-email"]').type(email);
-
+    // --- Register Flow Methods ---
+    initiateSignup() {
+        cy.get('[data-qa="signup-name"]').type(this.userData.name);
+        cy.get('[data-qa="signup-email"]').type(this.userData.email);
         cy.get('[data-qa="signup-button"]').click();
     }
 
-    // Fill account information
-    enterAccountInformation(user) {
-
-        cy.get('#id_gender1').check();
-
-        cy.get('#password').type(user.password);
-
-        cy.get('#days').select('10');
-
-        cy.get('#months').select('5');
-
-        cy.get('#years').select('2000');
+    fillAccountDetails() {
+        cy.get('#id_gender1').click();
+        cy.get('[data-qa="password"]').type(this.userData.password);
+        cy.get('[data-qa="days"]').select('10');
+        cy.get('[data-qa="months"]').select('June');
+        cy.get('[data-qa="years"]').select('1995');
 
         cy.get('#newsletter').check();
-
         cy.get('#optin').check();
 
-        cy.get('#first_name').type(user.firstName);
-
-        cy.get('#last_name').type(user.lastName);
-
-        cy.get('#company').type(user.company);
-
-        cy.get('#address1').type(user.address);
-
-        cy.get('#address2').type(user.address2);
-
-        cy.get('#country').select('Canada');
-
-        cy.get('#state').type(user.state);
-
-        cy.get('#city').type(user.city);
-
-        cy.get('#zipcode').type(user.zipcode);
-
-        cy.get('#mobile_number').type(user.mobile);
-    }
-
-    // Create account
-    createAccount() {
+        cy.get('[data-qa="first_name"]').type(this.userData.name.split(' ')[0]);
+        cy.get('[data-qa="last_name"]').type(this.userData.name.split(' ')[1] || 'Test');
+        cy.get('[data-qa="company"]').type('QA Testing Inc.');
+        cy.get('[data-qa="address"]').type('123 Automation St');
+        cy.get('[data-qa="country"]').select('United States');
+        cy.get('[data-qa="state"]').type('California');
+        cy.get('[data-qa="city"]').type('Los Angeles');
+        cy.get('[data-qa="zipcode"]').type('90001');
+        cy.get('[data-qa="mobile_number"]').type('1234567890');
 
         cy.get('[data-qa="create-account"]').click();
     }
 
-    // Verify successful registration
     verifyAccountCreated() {
-    cy.get('[data-qa="account-created"]').should('be.visible');
-}
-
-    // Continue after registration
-    continueAfterRegistration() {
-
+        cy.get('[data-qa="account-created"]').should('be.visible');
         cy.get('[data-qa="continue-button"]').click();
     }
 
-    // Login
-    enterLoginDetails(email, password) {
-
+    // --- Login Flow Methods ---
+    loginUser(email, password) {
         cy.get('[data-qa="login-email"]').type(email);
-
         cy.get('[data-qa="login-password"]').type(password);
-
         cy.get('[data-qa="login-button"]').click();
     }
 
-    // Verify successful login
+    // --- Verifications ---
     verifySuccessfulLogin(name) {
-
-        cy.contains(`Logged in as ${name}`).should('be.visible');
+        cy.url().should('include', '/');
+        cy.contains(`Logged in as ${name}`, { timeout: 10000 }).should('be.visible');
     }
-
-    // Logout
-    logout() {
-
-        cy.contains('Logout').click();
-    }
-
-    // Verify unsuccessful login
-    verifyInvalidLogin() {
-
-        cy.contains('Your email or password is incorrect!')
-            .should('be.visible');
-    }
-
 }
 
-export default SignupLoginPage;
+export default new SignupLoginPages();

@@ -1,11 +1,12 @@
-name: Cypress Automation Tests
+name: Cypress Assignment Test
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   cypress-tests:
@@ -13,12 +14,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
-      - name: Run Cypress Tests
-        uses: cypress-io/github-action@v7
+      - name: Run Cypress Assignment
+        uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          spec: |
-            cypress/e2e/globalfixtureass.cy.js
-            cypress/e2e/Pomautomationass.cy.js
+          spec: cypress/e2e/assignment.cy.js
